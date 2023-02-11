@@ -70,8 +70,6 @@ int main(){
         cycle++;
     }
 
-    //this is a test
-
     printf("done...");
 }
 
