@@ -70,8 +70,6 @@ int main(){
         cycle++;
     }
 
-    //this is just to see if this is being tracking by github
-
     printf("done...");
 }
 
