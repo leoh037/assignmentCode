@@ -15,7 +15,7 @@ int main(){
 
     ///////////////////////////////////////
 
-    struct node **arr = malloc(numberOfProcesses * sizeof(struct node*));   //will allocate a buffer big enough to hold n pointers struct nodes
+    struct node **structs = malloc(numberOfProcesses * sizeof(struct node*));   //will allocate a buffer big enough to hold n pointers struct nodes
 
     Process *process;
     struct node *newNode;
@@ -30,15 +30,15 @@ int main(){
         newNode -> process = process;
         newNode -> state = 0;
         newNode -> next = NULL;
-        *(arr + i) = newNode;
+        *(structs + i) = newNode;
     }
 
     struct node *head = NULL;
     struct node *tail = NULL;
 
     char *states[] = {"blocked", "ready", "running"};
-    int timeToProcess = arr[0]->process->cpu_time;
-    int burtsTime =  (int)(arr[0]->process->cpu_time * 0.5);
+    int timeToProcess = structs[0]->process->cpu_time;
+    int burtsTime =  (int)(structs[0]->process->cpu_time * 0.5);
     int cycle = 0;
 
     int runtimer = burtsTime;
@@ -49,8 +49,22 @@ int main(){
 
     char *cycleResults[3];
 
+    struct node* current;
+
     while(timeToProcess > 0){
-        sprintf(cycleResults[arr[0]->process->pid], "%d:%s", arr[0]->process->pid, states[stateid]);
+
+        for(int i = 0; i < numberOfProcesses; i++){
+            current = structs[i];
+            if (current -> process -> arrival_time == cycle){
+                current -> state = 1;
+            }
+            if()
+        }
+
+
+
+
+        sprintf(cycleResults[structs[0]->process->pid], "%d:%s", structs[0]->process->pid, states[stateid]);
         if(stateid == 0){
             blocktimer--;
             if(blocktimer == 0){
@@ -63,7 +77,7 @@ int main(){
             runtimer--;
             if(runtimer == 0){
                 stateid = 0;
-                blocktimer = arr[0]->process->io_time;
+                blocktimer = structs[0]->process->io_time;
             }
         }
         printf("%d %s\n", cycle, cycleResults[0]);
