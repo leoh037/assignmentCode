@@ -29,7 +29,7 @@ void enqueue(struct node **pHead, struct node **pTail, struct node *newNode) {
 }
 
 //remove a node from the front of the queue (head of the linked list)
-struct node * Dequeue(struct node **pHead){
+struct node * dequeue(struct node **pHead){
     //only dequeue if the queue is not empty
     struct node *temp = *pHead;
     if(*pHead != NULL){
