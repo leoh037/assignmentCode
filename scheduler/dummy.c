@@ -7,12 +7,12 @@
 
 int main(){
 
-    int numberOfProcesses = 1;
+    int numberOfProcesses = 2;
 
-    // int values[3][4] = {
-    //     {0, 2, 2, 0},
-    //     {1, 2, 1, 2}
-    // };
+    int values[3][4] = {
+        {0, 2, 2, 0},
+        {1, 2, 1, 2}
+    };
     
     // int values[3][4] = {
     //     {0, 4, 2, 0},
@@ -20,9 +20,9 @@ int main(){
     //     {2, 8, 4, 3}
     // };
 
-    int values[3][4] = {
-        {1, 4, 4, 0}
-    };
+    // int values[3][4] = {
+    //     {0, 2, 2, 0}
+    // };
 
     ///////////////////////////////////////
 
@@ -59,7 +59,7 @@ int main(){
     
     char* cycleResult;
     char overallResult[50];
-    int shortestTime;
+    int shortestTime = 0;
 
     struct node* current;
     struct node* shortest;
@@ -93,12 +93,16 @@ int main(){
                 shortestTime = shortest->remainingTime;
 
                 if((i + 1) == numberOfProcesses){
+                    printf("shortest time = %d\n", shortest->remainingTime);
                     enqueue(&head, &tail, shortest);
                     shortest->queuedState = 1;
+                    shortest->processState = 2;
                     shortestTime = 0;
+                    printf("current on queue = %d\n", shortest->process->pid);
                 }
             }
         }
+        printf("queue size cycle %d is = %d\n", currentCycle, getSize(&head));
 
         //ensure that only the process at the head of the queue is in a running state, all other processes in the queue are ready, and those not on the queue are either blocked or have terminated
         if(getSize(&head) > 0){
@@ -139,6 +143,7 @@ int main(){
                     cpuCycles++;
                 }
                 if(current->remainingTime == 0){
+                    dequeue(&head);
                     current->terminationState = 1;
                     current->turnaroundTime = currentCycle - current->process->arrival_time + 1;
                     terminatedProcesses++;
@@ -150,15 +155,15 @@ int main(){
             }
             strcat(overallResult, cycleResult);
         }
-        printf("%s\n", overallResult);
+        //printf("%s\n", overallResult);
         currentCycle++;
     }
-    printf("(empty line)\n");
-    printf("Finishing time: %d\n", currentCycle - 1);
-    printf("CPU utilization: %0.2f\n", (double)cpuCycles/currentCycle);
-    for(int i = 0; i<numberOfProcesses; i++){
-        current = structs[i];
-        printf("Turnaround process %d: %d\n", current->process->pid, current->turnaroundTime);
-    }
+    // printf("(empty line)\n");
+    // printf("Finishing time: %d\n", currentCycle - 1);
+    // printf("CPU utilization: %0.2f\n", (double)cpuCycles/currentCycle);
+    // for(int i = 0; i<numberOfProcesses; i++){
+    //     current = structs[i];
+    //     printf("Turnaround process %d: %d\n", current->process->pid, current->turnaroundTime);
+    // }
 }
 
