@@ -7,12 +7,11 @@
 
 int main(){
 
-    int numberOfProcesses = 2;
-
-    int values[3][4] = {
-        {0, 2, 2, 0},
-        {1, 2, 1, 2}
-    };
+    // int numberOfProcesses = 2;
+    // int values[3][4] = {
+    //     {0, 2, 2, 0},
+    //     {1, 2, 1, 2}
+    // };
     
     // int values[3][4] = {
     //     {0, 4, 2, 0},
@@ -20,9 +19,10 @@ int main(){
     //     {2, 8, 4, 3}
     // };
 
-    // int values[3][4] = {
-    //     {0, 2, 2, 0}
-    // };
+    int numberOfProcesses = 1;  
+    int values[1][4] = {
+        {0, 2, 2, 0}
+    };
 
     ///////////////////////////////////////
 
@@ -89,20 +89,16 @@ int main(){
                         shortest = current;
                     }
                 }
-
                 shortestTime = shortest->remainingTime;
+            }
 
-                if((i + 1) == numberOfProcesses){
-                    //printf("shortest time = %d\n", shortest->remainingTime);
-                    enqueue(&head, &tail, shortest);
-                    shortest->queuedState = 1;
-                    shortest->processState = 2;
-                    shortestTime = 0;
-                    //printf("current on queue = %d\n", shortest->process->pid);
-                }
+            if((i + 1) == numberOfProcesses && (getSize(&head) == 0)){
+                enqueue(&head, &tail, shortest);
+                shortest->queuedState = 1;
+                shortest->processState = 2;
+                shortestTime = 0;
             }
         }
-        //printf("queue size cycle %d is = %d\n", currentCycle, getSize(&head));
 
         //ensure that only the process at the head of the queue is in a running state, all other processes in the queue are ready, and those not on the queue are either blocked or have terminated
         if(getSize(&head) > 0){
