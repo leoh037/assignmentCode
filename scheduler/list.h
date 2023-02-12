@@ -17,9 +17,10 @@ struct node {
     int arrivalState; // 0 = not arrived, 1 = arrived
     int queuedState; // 0 = not in queue, 1 = in queue
     int burstTime; // the number of cycles a process spends in a cpu burt
-    int remainingTime; // keeps track of how many cycles the process has run for
+    int remainingTime; // keeps track of the remaining cycles the process has to run in order to terminate
     int runTimer; // keeps track of how many more cycles the process has run during a given cpu burts
     int blockTimer; // keeps track of how many more cycles the process must be blocked for during a given i/o burst
+    int quantumTimer; //time interval during which process is allowed to run
     struct node *next;
 };
 

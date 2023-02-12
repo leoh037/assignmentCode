@@ -4,14 +4,22 @@
 
 #include "queue.h"
 
+#define QUANTUM 2
+
 int main(){
 
-    int numberOfProcesses = 3;
-    int values[3][4] = {
+    int numberOfProcesses = 2;
+    // int values[3][4] = {
+    //     {0, 4, 2, 0},
+    //     {1, 6, 1, 2},
+    //     {2, 8, 4, 3}
+    // };
+
+    int values[2][4] = {
         {0, 2, 2, 0},
-        {1, 2, 1, 5},
-        {2, 2, 1, 3}
+        {1, 2, 1, 2}
     };
+
 
     ///////////////////////////////////////
 
@@ -38,6 +46,7 @@ int main(){
         newNode->remainingTime = process -> cpu_time;
         newNode->runTimer = newNode -> burstTime;
         newNode->next = NULL;
+        newNode->quantumTimer = QUANTUM;
         *(structs + i) = newNode;
     }
 
@@ -55,6 +64,7 @@ int main(){
     int waitingProcesses = 0;
     int currentCycle = 0;
     int cpuCycles = 0;
+
     while(terminatedProcesses < numberOfProcesses){
 
         //go through the pointer to struct node array and examine on the state of all processes
@@ -100,12 +110,19 @@ int main(){
                 else if(current->processState == 2){
                     current->remainingTime = current->remainingTime - 1;
                     current->runTimer = current -> runTimer - 1;
-                    if(current -> runTimer == 0){
-                        //set process to blocked stated
-                        current->processState = 0;
+                    current->quantumTimer = current -> quantumTimer - 1;
+                    if(current -> runTimer == 0 || current -> quantumTimer == 0){
+                        if(current -> runTimer == 0){
+                            //set process to blocked stated
+                            current->processState = 0;
+                            current->blockTimer = current->process->io_time;
+                        } else if(current -> quantumTimer == 0){
+                            //sets process to ready state
+                            current->processState = 1;
+                            current->quantumTimer = QUANTUM;
+                        }
                         dequeue(&head);
                         current->queuedState = 0;
-                        current->blockTimer = current->process->io_time;
                     }
                     cpuCycles++;
                 }
