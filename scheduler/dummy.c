@@ -1,22 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "queue.h"
 
 int main(){
 
-    int numberOfProcesses = 3;
+    int numberOfProcesses = 1;
 
     // int values[3][4] = {
     //     {0, 2, 2, 0},
     //     {1, 2, 1, 2}
     // };
     
+    // int values[3][4] = {
+    //     {0, 4, 2, 0},
+    //     {1, 6, 1, 2},
+    //     {2, 8, 4, 3}
+    // };
+
     int values[3][4] = {
-        {0, 4, 2, 0},
-        {1, 6, 1, 2},
-        {2, 8, 4, 3}
+        {1, 4, 4, 0}
     };
 
     ///////////////////////////////////////
@@ -40,7 +45,7 @@ int main(){
         newNode->terminationState = 0;
         newNode->arrivalState = 0;
         newNode->queuedState = 0;
-        newNode->burstTime = (int)(process -> cpu_time * 0.5);
+        newNode->burstTime = round((process ->cpu_time) * 0.5);
         newNode->remainingTime = process -> cpu_time;
         newNode->runTimer = newNode -> burstTime;
         newNode->next = NULL;
@@ -54,8 +59,10 @@ int main(){
     
     char* cycleResult;
     char overallResult[50];
+    int shortestTime;
 
     struct node* current;
+    struct node* shortest;
     int numberOfReadyProcesses = 0;
     int terminatedProcesses = 0;
     int waitingProcesses = 0;
@@ -71,9 +78,25 @@ int main(){
                 current->arrivalState = 1;
                 waitingProcesses++;
             }
-            if((current -> processState == 1) && (current->queuedState == 0)){
-                enqueue(&head, &tail, current);
-                current->queuedState = 1;
+
+            //find the process with the shortest remaining cpu time (note that here we are limiting our queue to having only one process in a cycle)
+            if((current->terminationState != 1) && (current->processState == 1) && (current->queuedState == 0) && (getSize(&head) == 0)){
+                if( shortestTime == 0){
+                    shortest = current;
+                }
+                else{
+                    if(current->remainingTime < shortestTime){
+                        shortest = current;
+                    }
+                }
+
+                shortestTime = shortest->remainingTime;
+
+                if((i + 1) == numberOfProcesses){
+                    enqueue(&head, &tail, shortest);
+                    shortest->queuedState = 1;
+                    shortestTime = 0;
+                }
             }
         }
 
