@@ -28,7 +28,9 @@ int main(){
         process->arrival_time = values[i][3];
         newNode = malloc(sizeof(struct node));
         newNode -> process = process;
-        newNode -> state = 0;
+        newNode -> processState = 0;
+        newNode -> terminationState = 0;
+        newNode -> arrivalState = 0;
         newNode -> next = NULL;
         *(structs + i) = newNode;
     }
@@ -39,7 +41,7 @@ int main(){
     char *states[] = {"blocked", "ready", "running"};
     int timeToProcess = structs[0]->process->cpu_time;
     int burtsTime =  (int)(structs[0]->process->cpu_time * 0.5);
-    int cycle = 0;
+    int currentCycle = 0;
 
     int runtimer = burtsTime;
     int blocktimer;
@@ -50,21 +52,27 @@ int main(){
     char *cycleResults[3];
 
     struct node* current;
+    int numberOfReadyProcesses = 0;
+    int terminatedProcesses = 0;
 
-    while(timeToProcess > 0){
+    while(terminatedProcesses < numberOfProcesses){
 
         for(int i = 0; i < numberOfProcesses; i++){
             current = structs[i];
-            if (current -> process -> arrival_time == cycle){
-                current -> state = 1;
+            if (current -> process -> arrival_time == currentCycle){
+                current -> processState = 1;
+                current -> arrivalState = 1;
             }
-            if()
+            if(current -> processState == 1){
+                enqueue(&head, &tail, current);
+            }
+            if(current -> terminationState == 1){
+                terminatedProcesses++;
+            }
         }
 
-
-
-
         sprintf(cycleResults[structs[0]->process->pid], "%d:%s", structs[0]->process->pid, states[stateid]);
+
         if(stateid == 0){
             blocktimer--;
             if(blocktimer == 0){
@@ -80,8 +88,8 @@ int main(){
                 blocktimer = structs[0]->process->io_time;
             }
         }
-        printf("%d %s\n", cycle, cycleResults[0]);
-        cycle++;
+        printf("%d %s\n", currentCycle, cycleResults[0]);
+        currentCycle++;
     }
 
     printf("done...");

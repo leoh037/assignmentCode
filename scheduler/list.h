@@ -11,7 +11,9 @@
 
 struct node {
     Process *process;
-    int state;
+    int processState;
+    int terminationState;
+    int arrivalState;
     struct node *next;
 };
 
