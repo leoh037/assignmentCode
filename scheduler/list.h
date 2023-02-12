@@ -13,6 +13,7 @@ struct node {
     Process *process;
     int processState; // 0 = blocked, 1 = ready, 2 = running
     int terminationState; // 0 = not terminated, 1 = terminated
+    int turnaroundTime; // cycle at which process was terminated
     int arrivalState; // 0 = not arrived, 1 = arrived
     int queuedState; // 0 = not in queue, 1 = in queue
     int burstTime; // the number of cycles a process spends in a cpu burt

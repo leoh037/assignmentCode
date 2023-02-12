@@ -29,16 +29,15 @@ int main(){
         process->io_time = values[i][2];
         process->arrival_time = values[i][3];
         newNode = malloc(sizeof(struct node));
-        newNode -> process = process;
-        newNode -> processState = 0;
-        newNode -> terminationState = 0;
-        newNode -> arrivalState = 0;
-        newNode -> queuedState = 0;
-        newNode -> burstTime = (int)(process -> cpu_time * 0.5);
-        newNode -> remainingTime = process -> cpu_time;
-        newNode -> runTimer = newNode -> burstTime;
-        newNode -> blockTimer = 0;
-        newNode -> next = NULL;
+        newNode->process = process;
+        newNode->processState = 0;
+        newNode->terminationState = 0;
+        newNode->arrivalState = 0;
+        newNode->queuedState = 0;
+        newNode->burstTime = (int)(process -> cpu_time * 0.5);
+        newNode->remainingTime = process -> cpu_time;
+        newNode->runTimer = newNode -> burstTime;
+        newNode->next = NULL;
         *(structs + i) = newNode;
     }
 
@@ -47,88 +46,90 @@ int main(){
 
     char *states[] = {"blocked", "ready", "running"};
     
-    char** cycleResults = malloc(numberOfProcesses * sizeof(char *));
     char* cycleResult;
+    char overallResult[50];
 
     struct node* current;
     int numberOfReadyProcesses = 0;
     int terminatedProcesses = 0;
     int waitingProcesses = 0;
     int currentCycle = 0;
+    int cpuCycles = 0;
     while(terminatedProcesses < numberOfProcesses){
+
         //go through the pointer to struct node array and examine on the state of all processes
         for(int i = 0; i < numberOfProcesses; i++){
             current = structs[i];            
-            if (current -> process -> arrival_time == currentCycle){
-                current -> processState = 1;
-                current -> arrivalState = 1;
+            if (current->process -> arrival_time == currentCycle){
+                current->processState = 1;
+                current->arrivalState = 1;
                 waitingProcesses++;
             }
-            if((current -> processState == 1) && (current -> queuedState == 0)){
+            if((current -> processState == 1) && (current->queuedState == 0)){
                 enqueue(&head, &tail, current);
-                current -> queuedState = 1;
+                current->queuedState = 1;
             }
         }
+
         //ensure that only the process at the head of the queue is in a running state, all other processes in the queue are ready, and those not on the queue are either blocked or have terminated
         if(getSize(&head) > 0){
             if(head -> processState != 2){
                 head -> processState = 2;
             }
         }
+
         // do the following for every process that has arrived and is not in a ready state
-        printf("%d ", currentCycle);
+
+        sprintf(overallResult, "%d ", currentCycle);
+
         for(int i = 0; i < numberOfProcesses; i++){
             current = structs[i];
-
-            //printf("%d %d %d %d\n", current->process->pid, current->process->cpu_time,current->process->io_time,current->process->arrival_time);
-            //printf("state %d, terminated %d, arrival %d,  queued %d, burst %d, remaining %d, run %d, block %d\n", current->processState, current->terminationState, current->arrivalState, current->queuedState, current->burstTime, current->remainingTime, current->runTimer, current->blockTimer);
             cycleResult = malloc(10 * sizeof(char));
-            if((current -> arrivalState == 1) && (current -> terminationState != 1)){
-                //printf("pid = %d", current->process->pid);
-                sprintf(cycleResult, "%d:%s", current->process->pid, states[current -> processState]);
-                cycleResults[current -> process -> pid] = cycleResult;
+            if((current -> arrivalState == 1) && (current->terminationState != 1)){
+                
+                sprintf(cycleResult, "%d:%s ", current->process->pid, states[current->processState]);
 
-                if(current -> processState == 0){
-                    (current -> blockTimer) = (current -> blockTimer) - 1;
+                if(current->processState == 0){
+                    (current->blockTimer) = (current->blockTimer) - 1;
                     if(current -> blockTimer == 0){
                         //set to ready state
-                        current -> processState = 1;
-                        current -> runTimer = current -> burstTime;
+                        current->processState = 1;
+                        current->runTimer = current->burstTime;
                     }
                 }
-                else if(current -> processState == 2){
-                    //printf("cycle %d process is running\n", currentCycle);
-                    //printf("%d current -> remainingTime = %d\n", currentCycle, current -> remainingTime);
-                    //printf("%d current -> runTimer2 = %d\n", currentCycle, current -> runTimer);
-                    current -> remainingTime = current -> remainingTime - 1;
-                    current -> runTimer = current -> runTimer - 1;
+                else if(current->processState == 2){
+                    current->remainingTime = current->remainingTime - 1;
+                    current->runTimer = current -> runTimer - 1;
                     if(current -> runTimer == 0){
                         //set process to blocked stated
-                        current -> processState = 0;
+                        current->processState = 0;
                         dequeue(&head);
-                        current -> queuedState = 0;
-                        current -> blockTimer = current -> process -> io_time;
+                        current->queuedState = 0;
+                        current->blockTimer = current->process->io_time;
                     }
+                    cpuCycles++;
                 }
-                if(current -> remainingTime == 0){
-                    current -> terminationState = 1;
+                if(current->remainingTime == 0){
+                    current->terminationState = 1;
+                    current->turnaroundTime = currentCycle - current->process->arrival_time + 1;
                     terminatedProcesses++;
                     waitingProcesses--;
                 }
-                printf("%s ", cycleResults[current -> process -> pid]);
             }
             else{
                 cycleResult = "";
-                cycleResults[current -> process -> pid] = cycleResult;
-                printf("%s", cycleResults[current -> process -> pid]);
             }
+            strcat(overallResult, cycleResult);
         }
-        printf("\n");
+        printf("%s\n", overallResult);
         currentCycle++;
     }
     printf("(empty line)\n");
-    printf("Finishing time:%d\n", currentCycle-1);
-
-    printf("done...");
+    printf("Finishing time: %d\n", currentCycle - 1);
+    printf("CPU utilization: %0.2f\n", (double)cpuCycles/currentCycle);
+    for(int i = 0; i<numberOfProcesses; i++){
+        current = structs[i];
+        printf("Turnaround process %d: %d\n", current->process->pid, current->turnaroundTime);
+    }
 }
 
