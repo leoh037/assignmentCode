@@ -93,16 +93,16 @@ int main(){
                 shortestTime = shortest->remainingTime;
 
                 if((i + 1) == numberOfProcesses){
-                    printf("shortest time = %d\n", shortest->remainingTime);
+                    //printf("shortest time = %d\n", shortest->remainingTime);
                     enqueue(&head, &tail, shortest);
                     shortest->queuedState = 1;
                     shortest->processState = 2;
                     shortestTime = 0;
-                    printf("current on queue = %d\n", shortest->process->pid);
+                    //printf("current on queue = %d\n", shortest->process->pid);
                 }
             }
         }
-        printf("queue size cycle %d is = %d\n", currentCycle, getSize(&head));
+        //printf("queue size cycle %d is = %d\n", currentCycle, getSize(&head));
 
         //ensure that only the process at the head of the queue is in a running state, all other processes in the queue are ready, and those not on the queue are either blocked or have terminated
         if(getSize(&head) > 0){
@@ -133,21 +133,22 @@ int main(){
                 else if(current->processState == 2){
                     current->remainingTime = current->remainingTime - 1;
                     current->runTimer = current -> runTimer - 1;
-                    if(current -> runTimer == 0){
-                        //set process to blocked stated
-                        current->processState = 0;
+                    if(current->remainingTime == 0 || current -> runTimer == 0){
+                        if(current->remainingTime == 0){
+                            current->terminationState = 1;
+                            current->turnaroundTime = currentCycle - current->process->arrival_time + 1;
+                            terminatedProcesses++;
+                            waitingProcesses--;
+                        }
+                        else if(current -> runTimer == 0){
+                            //set process to blocked stated
+                            current->processState = 0;
+                            current->blockTimer = current->process->io_time;
+                        }
                         dequeue(&head);
                         current->queuedState = 0;
-                        current->blockTimer = current->process->io_time;
                     }
                     cpuCycles++;
-                }
-                if(current->remainingTime == 0){
-                    dequeue(&head);
-                    current->terminationState = 1;
-                    current->turnaroundTime = currentCycle - current->process->arrival_time + 1;
-                    terminatedProcesses++;
-                    waitingProcesses--;
                 }
             }
             else{
@@ -155,7 +156,7 @@ int main(){
             }
             strcat(overallResult, cycleResult);
         }
-        //printf("%s\n", overallResult);
+        printf("%s\n", overallResult);
         currentCycle++;
     }
     // printf("(empty line)\n");

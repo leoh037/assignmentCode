@@ -25,7 +25,7 @@ void enqueue(struct node **pHead, struct node **pTail, struct node *newNode) {
         *pTail = newNode;
     }
     newNode -> next = NULL;
-    printf("added process with id = %d to the queue\n", newNode->process->pid);
+    //printf("added process with id = %d to the queue\n", newNode->process->pid);
 }
 
 //remove a node from the front of the queue (head of the linked list)
@@ -34,10 +34,10 @@ struct node * dequeue(struct node **pHead){
     struct node *temp = *pHead;
     if(*pHead != NULL){
         *pHead = (*pHead) -> next;
-        printf("removed process with id = %d from the queue\n", temp->process->pid);
+        //printf("removed process with id = %d from the queue\n", temp->process->pid);
     }
     else{
-        printf("The queue is empty\n");
+        //printf("The queue is empty\n");
     }
     return temp;
 }
