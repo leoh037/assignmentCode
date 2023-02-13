@@ -7,11 +7,11 @@
 
 int main(){
 
-    // int numberOfProcesses = 2;
-    // int values[3][4] = {
-    //     {0, 2, 2, 0},
-    //     {1, 2, 1, 2}
-    // };
+    int numberOfProcesses = 2;
+    int values[3][4] = {
+        {0, 2, 2, 0},
+        {1, 2, 1, 2}
+    };
     
     // int values[3][4] = {
     //     {0, 4, 2, 0},
@@ -19,14 +19,12 @@ int main(){
     //     {2, 8, 4, 3}
     // };
 
-    int numberOfProcesses = 1;  
-    int values[1][4] = {
-        {0, 2, 2, 0}
-    };
+    // int numberOfProcesses = 1;  
+    // int values[1][4] = {
+    //     {0, 2, 2, 0}
+    // };
 
     ///////////////////////////////////////
-
-    printf("running dummy...\n");
 
     struct node **structs = malloc(numberOfProcesses * sizeof(struct node*));   //will allocate a buffer big enough to hold n pointers to struct nodes
 
@@ -92,11 +90,12 @@ int main(){
                 shortestTime = shortest->remainingTime;
             }
 
-            if((i + 1) == numberOfProcesses && (getSize(&head) == 0)){
+            if((i + 1) == numberOfProcesses && (getSize(&head) == 0) && shortest != NULL){
                 enqueue(&head, &tail, shortest);
                 shortest->queuedState = 1;
                 shortest->processState = 2;
                 shortestTime = 0;
+                shortest = NULL;
             }
         }
 
@@ -110,7 +109,6 @@ int main(){
         // do the following for every process that has arrived and is not in a ready state
 
         sprintf(overallResult, "%d ", currentCycle);
-
         for(int i = 0; i < numberOfProcesses; i++){
             current = structs[i];
             cycleResult = malloc(10 * sizeof(char));
@@ -131,6 +129,7 @@ int main(){
                     current->runTimer = current -> runTimer - 1;
                     if(current->remainingTime == 0 || current -> runTimer == 0){
                         if(current->remainingTime == 0){
+                            //set processes to terminated state
                             current->terminationState = 1;
                             current->turnaroundTime = currentCycle - current->process->arrival_time + 1;
                             terminatedProcesses++;
@@ -155,12 +154,12 @@ int main(){
         printf("%s\n", overallResult);
         currentCycle++;
     }
-    // printf("(empty line)\n");
-    // printf("Finishing time: %d\n", currentCycle - 1);
-    // printf("CPU utilization: %0.2f\n", (double)cpuCycles/currentCycle);
-    // for(int i = 0; i<numberOfProcesses; i++){
-    //     current = structs[i];
-    //     printf("Turnaround process %d: %d\n", current->process->pid, current->turnaroundTime);
-    // }
+    printf("\n");
+    printf("Finishing time: %d\n", currentCycle - 1);
+    printf("CPU utilization: %0.2f\n", (double)cpuCycles/currentCycle);
+    for(int i = 0; i<numberOfProcesses; i++){
+        current = structs[i];
+        printf("Turnaround process %d: %d\n", current->process->pid, current->turnaroundTime);
+    }
 }
 
