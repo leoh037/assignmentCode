@@ -7,17 +7,18 @@
 
 int main(){
 
-    int numberOfProcesses = 2;
-    int values[3][4] = {
-        {0, 2, 2, 0},
-        {1, 2, 1, 2}
-    };
-    
+    // int numberOfProcesses = 2;
     // int values[3][4] = {
-    //     {0, 4, 2, 0},
-    //     {1, 6, 1, 2},
-    //     {2, 8, 4, 3}
+    //     {0, 2, 2, 0},
+    //     {1, 2, 1, 2}
     // };
+    
+    int numberOfProcesses = 3;
+    int values[3][4] = {
+        {0, 4, 2, 0},
+        {1, 6, 1, 2},
+        {2, 8, 4, 3}
+    };
 
     // int numberOfProcesses = 1;  
     // int values[1][4] = {
